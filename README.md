@@ -74,7 +74,22 @@ It took about 2.5 hours on a 2-core CPU. On synthetic data the expected ordering
 
 ## Running on TCGA-BRCA
 
-Run these on your own machine (the GDC has to be reachable). Paths are examples.
+The GDC has to be reachable, so run this from your own Terminal or from Colab.
+
+**Short version:** `scripts/run_tcga.sh` runs the steps below in stages:
+
+```bash
+./scripts/run_tcga.sh setup            # venv + packages + tests
+./scripts/run_tcga.sh omics            # clinical + omics -> TabAE tokens (no slides)
+./scripts/run_tcga.sh slides-pilot 20  # time 20 slides, prints an estimate for all of them
+./scripts/run_tcga.sh slides           # all slides, downloaded 10 at a time and deleted after extraction
+./scripts/run_tcga.sh cohort && ./scripts/run_tcga.sh train replication && ./scripts/run_tcga.sh report
+```
+
+On Colab, open [`notebooks/run_tcga_colab.ipynb`](notebooks/run_tcga_colab.ipynb). It keeps data and results
+in Google Drive, so a dropped session resumes where it stopped.
+
+**Long version** (paths are examples):
 
 ```bash
 # 0. clinical + omics (a few GB) and the slide manifest

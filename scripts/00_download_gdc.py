@@ -103,7 +103,13 @@ def main():
     for kind in args.kinds:
         print(f"[{kind}]")
         if kind == "clinical":
-            download(CDR_URL, os.path.join(args.out, "TCGA-CDR-SupplementalTableS1.xlsx"))
+            target = os.path.join(args.out, "TCGA-CDR-SupplementalTableS1.xlsx")
+            try:
+                download(CDR_URL, target)
+            except Exception as err:
+                print(f"    could not download the TCGA-CDR table ({err}).\n"
+                      f"    Get 'TCGA-CDR-SupplementalTableS1.xlsx' from "
+                      f"https://gdc.cancer.gov/about-data/publications/pancanatlas and save it as {target}")
             continue
         if kind == "copynumbervariation":
             url = FIREHOSE_GISTIC.format(code=code)
