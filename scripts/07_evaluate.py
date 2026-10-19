@@ -69,9 +69,12 @@ def describe(name, preds, missingness=0.0):
     risks, time, event, _ = risk_matrix(preds, missingness)
     per_repeat = [cindex(time, event, risks[:, j]) for j in range(risks.shape[1])]
     auc, auc_sd = mean_survival_auc(preds, missingness)
+    d = preds[preds.missingness == missingness]
+    per_fold = [cindex(g.time, g.event, g.risk) for _, g in d.groupby(["repeat", "fold"])]
     pvals = [logrank_test(time, event, risk_groups(risks[:, j]))[1] for j in range(risks.shape[1])]
     return {"run": name, "missingness": missingness, "n": len(time), "events": int(event.sum()),
-            "repeats": risks.shape[1], "cindex": float(np.mean(per_repeat)), "cindex_sd": float(np.std(per_repeat)),
+            "repeats": risks.shape[1], "cindex": float(np.mean(per_repeat)), "cindex_sd": float(np.std(per_repeat)) if len(per_repeat) > 1 else float("nan"),
+            "cindex_fold_mean": float(np.nanmean(per_fold)), "cindex_fold_sd": float(np.nanstd(per_fold)),
             "survival_auc": auc, "survival_auc_sd": auc_sd, "logrank_p_median": float(np.median(pvals))}
 
 
@@ -120,15 +123,26 @@ def missingness_figure(rows, reference, path):
     import matplotlib.pyplot as plt
     fig, ax = plt.subplots(figsize=(6, 3.8), facecolor=SURFACE)
     style(ax)
+    ends = []
     for i, (name, d) in enumerate(rows.groupby("run", sort=False)):
         d = d.sort_values("missingness")
         color = SERIES[i % len(SERIES)]
         ax.plot(d.missingness * 100, d.cindex, color=color, linewidth=2, marker="o", markersize=6,
                 markeredgecolor=SURFACE, markeredgewidth=2, label=name)
-        ax.text(d.missingness.iloc[-1] * 100 + 2, d.cindex.iloc[-1], name, color=INK2, fontsize=8, va="center")
+        ends.append([d.cindex.iloc[-1], name])
+    # direct labels at the line ends, nudged apart so they never overlap
+    ends.sort()
+    lo, hi = rows.cindex.min(), rows.cindex.max()
+    gap = 0.045 * (hi - lo if hi > lo else 1)
+    for j in range(1, len(ends)):
+        ends[j][0] = max(ends[j][0], ends[j - 1][0] + gap)
+    for y, name in ends:
+        ax.text(103, y, name, color=INK2, fontsize=8, va="center")
     if reference is not None:
         ax.axhline(reference, color=MUTED, linestyle="--", linewidth=1)
-        ax.text(0, reference, " slide-only (AttMIL-WSI)", color=MUTED, fontsize=8, va="bottom")
+        ax.annotate("slide-only (AttMIL-WSI)", (88, reference), xytext=(0, 4), textcoords="offset points",
+                    color=MUTED, fontsize=8, ha="center", va="bottom",
+                    bbox=dict(facecolor=SURFACE, edgecolor="none", pad=1))
     ax.set_xlim(-5, 135)
     ax.set_xticks([0, 50, 100])
     ax.set_xlabel("Test patients without genomic data (%)", color=INK2)
@@ -142,7 +156,9 @@ def missingness_figure(rows, reference, path):
 
 # ----------------------------------------------------------------------------- report
 def fmt(m, s):
-    return f"{m:.3f} ± {s:.3f}" if np.isfinite(m) else "–"
+    if not np.isfinite(m):
+        return "–"
+    return f"{m:.3f} ± {s:.3f}" if np.isfinite(s) else f"{m:.3f}"
 
 
 def main():
@@ -198,13 +214,14 @@ def main():
     if args.note:
         lines += [args.note, ""]
     lines += ["## C-index and survival AUC", "",
-              "C-index of the aggregated out-of-fold predictions, mean ± SD over repeated 5-fold CV "
-              "(the paper's reporting). Survival AUC: Uno's cumulative/dynamic AUC averaged over each fold.", "",
-              "| Run | Test missingness | n (events) | C-index | Published (BRCA) | Survival AUC | Log-rank p (median) |",
-              "|---|---|---|---|---|---|---|"]
+              "C-index: aggregated out-of-fold predictions, mean ± SD over repeats of 5-fold CV (the paper's "
+              "reporting; no SD with a single repeat). Per-fold: mean ± SD of the five test-fold C-indices. "
+              "Survival AUC: Uno's cumulative/dynamic AUC, mean ± SD over folds.", "",
+              "| Run | Test missingness | n (events) | C-index | Per-fold C-index | Published (BRCA) | Survival AUC | Log-rank p (median) |",
+              "|---|---|---|---|---|---|---|---|"]
     for r in table.itertuples():
         pub = fmt(*paper[r.run]) if r.run in paper and r.missingness == 0 else "–"
-        lines.append(f"| {r.run} | {r.missingness:.0%} | {r.n} ({r.events}) | {fmt(r.cindex, r.cindex_sd)} | {pub} | "
+        lines.append(f"| {r.run} | {r.missingness:.0%} | {r.n} ({r.events}) | {fmt(r.cindex, r.cindex_sd)} | {fmt(r.cindex_fold_mean, r.cindex_fold_sd)} | {pub} | "
                      f"{fmt(r.survival_auc, r.survival_auc_sd)} | {r.logrank_p_median:.2g} |")
     if comparisons:
         lines += ["", "## Paired bootstrap of C-index differences (same patients)", "",

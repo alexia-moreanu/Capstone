@@ -1,0 +1,9 @@
+{
+  "missingness=0":{
+    "cindex_aggregated_mean":0.6700891537,
+    "cindex_aggregated_sd":0.0,
+    "cindex_fold_mean":0.6716718566,
+    "cindex_fold_sd":0.0294285663,
+    "n_patients":500
+  }
+}

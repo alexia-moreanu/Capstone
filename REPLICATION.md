@@ -95,6 +95,15 @@ We split by patient and pool all of a patient's DX slides into one bag of patche
 Each evaluation draws a fresh random set of 100 mosaics. We fix the draw with a seed, so
 predictions are reproducible.
 
+**F11. Pooling predictions across folds changes the C-index.**
+The paper computes one C-index over the pooled out-of-fold predictions ("five replicates on
+the aggregated risk predictions"). Each fold's model puts risks on its own scale, so pooling
+also scores how well the five models agree on scale, not only how well each ranks its own
+test patients.
+In the synthetic run the gap was large: genomics-only scored 0.610 pooled but 0.679 ± 0.028
+per fold. `07_evaluate.py` reports both. Compare against the paper with the pooled number,
+and use the per-fold number for model comparisons.
+
 ## 3. Data-source deviations
 
 | Data | Paper / official code | This repo |

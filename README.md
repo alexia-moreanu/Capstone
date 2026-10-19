@@ -66,6 +66,12 @@ pytest -q                                # 16 tests, ~1 min on CPU
 ./scripts/run_synthetic_smoke_test.sh     # CPU; writes results/synthetic_smoke_test/report.md
 ```
 
+It uses a small model (hidden 64), 25 epochs, 1 repeat, and lr 3e-4 / weight decay 1e-4. At the paper's
+weight decay of 0.7 the small model cannot move away from zero in that few epochs (REPLICATION.md, F7).
+It took about 2.5 hours on a 2-core CPU. On synthetic data the expected ordering comes out
+(fusion 0.698 > slide only 0.671 > genomics only 0.610; KM split p < 1e-16). See the
+[report](results/synthetic_smoke_test/report.md).
+
 ## Running on TCGA-BRCA
 
 Run these on your own machine (the GDC has to be reachable). Paths are examples.

@@ -1,0 +1,175 @@
+== catfusion: already done, skipping
+== attmil_wsi: already done, skipping
+== attmil_genomic: already done, skipping
+== fusion_concat: already done, skipping
+== fusion_kronecker: already done, skipping
+== fusion_lowrank: already done, skipping
+== protocol_inner_val_official_cox: already done, skipping
+== protocol_inner_val_exact_cox: already done, skipping
+== dropout_0.25: already done, skipping
+== dropout_0.5: already done, skipping
+== dropout_0.75: already done, skipping
+== distill_0.25
+[attmil_wsi] 500 complete-case patients, event rate 0.29
+    training CATfusion teacher
+    epoch    0  train 2.8393  select 3.5846
+    epoch    5  train 2.9042  select 3.5829
+    epoch   10  train 2.8297  select 3.5755
+    epoch   15  train 2.8495  select 3.5092
+    epoch   20  train 2.3603  select 3.7090
+    epoch   24  train 2.0992  select 3.9988
+  repeat 0 fold 0: train 400  test 100
+    epoch    0  train 2.1744  select 3.5842
+    epoch    5  train 2.2038  select 3.5436
+    epoch   10  train 2.1493  select 3.4551
+    epoch   15  train 2.1618  select 3.4326
+    epoch   20  train 1.9847  select 3.4806
+    epoch   24  train 1.8780  select 3.5698
+  repeat 0 fold 0: test C-index 0.695  (158s)
+    training CATfusion teacher
+    epoch    0  train 2.8676  select 3.7990
+    epoch    5  train 2.6884  select 3.7944
+    epoch   10  train 2.7442  select 3.7389
+    epoch   15  train 2.5516  select 3.5031
+    epoch   20  train 2.3252  select 3.6561
+    epoch   24  train 2.2064  select 3.6345
+  repeat 0 fold 1: train 400  test 100
+    epoch    0  train 2.7471  select 3.7996
+    epoch    5  train 2.5810  select 3.7349
+    epoch   10  train 2.5122  select 3.5690
+    epoch   15  train 2.4713  select 3.5286
+    epoch   20  train 2.4223  select 3.5176
+    epoch   24  train 2.2219  select 3.5216
+  repeat 0 fold 1: test C-index 0.748  (158s)
+    training CATfusion teacher
+    epoch    0  train 2.7392  select 3.7032
+    epoch    5  train 2.8009  select 3.7023
+    epoch   10  train 2.7361  select 3.6850
+    epoch   15  train 2.6104  select 3.5527
+    epoch   20  train 2.3274  select 3.2090
+    epoch   24  train 2.0090  select 3.7608
+  repeat 0 fold 2: train 400  test 100
+    epoch    0  train 2.9578  select 3.7026
+    epoch    5  train 2.4500  select 3.6606
+    epoch   10  train 2.2738  select 3.6795
+    epoch   15  train 2.1510  select 3.6848
+    epoch   20  train 2.1333  select 3.6945
+    epoch   24  train 2.0224  select 3.7252
+  repeat 0 fold 2: test C-index 0.620  (156s)
+    training CATfusion teacher
+    epoch    0  train 2.9828  select 3.6594
+    epoch    5  train 2.9219  select 3.6585
+    epoch   10  train 2.8917  select 3.6502
+    epoch   15  train 2.8958  select 3.5595
+    epoch   20  train 2.3735  select 3.5253
+    epoch   24  train 2.1189  select 3.8236
+  repeat 0 fold 3: train 400  test 100
+    epoch    0  train 2.4683  select 3.6591
+    epoch    5  train 2.2677  select 3.5347
+    epoch   10  train 2.2020  select 3.4905
+    epoch   15  train 2.1835  select 3.4812
+    epoch   20  train 2.0826  select 3.4769
+    epoch   24  train 2.0876  select 3.4878
+  repeat 0 fold 3: test C-index 0.692  (154s)
+    training CATfusion teacher
+    epoch    0  train 2.7639  select 3.5157
+    epoch    5  train 2.8311  select 3.5141
+    epoch   10  train 2.7738  select 3.4947
+    epoch   15  train 2.7662  select 3.3934
+    epoch   20  train 2.4216  select 3.7297
+    epoch   24  train 2.0494  select 3.6744
+  repeat 0 fold 4: train 400  test 100
+    epoch    0  train 2.1154  select 3.5160
+    epoch    5  train 2.1587  select 3.5012
+    epoch   10  train 2.0595  select 3.3417
+    epoch   15  train 2.1138  select 3.3346
+    epoch   20  train 2.0978  select 3.3130
+    epoch   24  train 1.9669  select 3.2787
+  repeat 0 fold 4: test C-index 0.665  (158s)
+== distill_0.5
+[attmil_wsi] 500 complete-case patients, event rate 0.29
+  repeat 0 fold 0: train 400  test 100
+    epoch    0  train 1.5091  select 3.5839
+    epoch    5  train 1.5085  select 3.5046
+    epoch   10  train 1.4713  select 3.4641
+    epoch   15  train 1.4854  select 3.4446
+    epoch   20  train 1.3570  select 3.4603
+    epoch   24  train 1.2802  select 3.4878
+  repeat 0 fold 0: test C-index 0.692  (26s)
+  repeat 0 fold 1: train 400  test 100
+    epoch    0  train 2.6267  select 3.7996
+    epoch    5  train 2.4764  select 3.7259
+    epoch   10  train 2.3585  select 3.5779
+    epoch   15  train 2.2167  select 3.5139
+    epoch   20  train 2.1313  select 3.5306
+    epoch   24  train 2.0474  select 3.5827
+  repeat 0 fold 1: test C-index 0.738  (27s)
+  repeat 0 fold 2: train 400  test 100
+    epoch    0  train 3.1751  select 3.7025
+    epoch    5  train 2.1317  select 3.6626
+    epoch   10  train 1.9233  select 3.6761
+    epoch   15  train 1.8008  select 3.6824
+    epoch   20  train 1.7694  select 3.6896
+    epoch   24  train 1.6579  select 3.7298
+  repeat 0 fold 2: test C-index 0.630  (27s)
+  repeat 0 fold 3: train 400  test 100
+    epoch    0  train 1.9533  select 3.6589
+    epoch    5  train 1.6877  select 3.5311
+    epoch   10  train 1.6283  select 3.5196
+    epoch   15  train 1.5913  select 3.5033
+    epoch   20  train 1.5283  select 3.5011
+    epoch   24  train 1.5191  select 3.5077
+  repeat 0 fold 3: test C-index 0.691  (27s)
+  repeat 0 fold 4: train 400  test 100
+    epoch    0  train 1.4669  select 3.5159
+    epoch    5  train 1.4848  select 3.4848
+    epoch   10  train 1.4196  select 3.3573
+    epoch   15  train 1.4433  select 3.3565
+    epoch   20  train 1.4331  select 3.3305
+    epoch   24  train 1.3584  select 3.3054
+  repeat 0 fold 4: test C-index 0.663  (27s)
+== distill_0.75
+[attmil_wsi] 500 complete-case patients, event rate 0.29
+  repeat 0 fold 0: train 400  test 100
+    epoch    0  train 0.8438  select 3.5838
+    epoch    5  train 0.8224  select 3.4892
+    epoch   10  train 0.8007  select 3.4738
+    epoch   15  train 0.8062  select 3.4547
+    epoch   20  train 0.7240  select 3.4519
+    epoch   24  train 0.6853  select 3.4625
+  repeat 0 fold 0: test C-index 0.686  (27s)
+  repeat 0 fold 1: train 400  test 100
+    epoch    0  train 2.5062  select 3.7996
+    epoch    5  train 2.3749  select 3.7199
+    epoch   10  train 2.2169  select 3.5913
+    epoch   15  train 1.9761  select 3.5126
+    epoch   20  train 1.8875  select 3.5407
+    epoch   24  train 1.7007  select 3.6334
+  repeat 0 fold 1: test C-index 0.735  (27s)
+  repeat 0 fold 2: train 400  test 100
+    epoch    0  train 3.3924  select 3.7025
+    epoch    5  train 1.8257  select 3.6629
+    epoch   10  train 1.5708  select 3.6755
+    epoch   15  train 1.4630  select 3.6792
+    epoch   20  train 1.4188  select 3.6827
+    epoch   24  train 1.2909  select 3.7192
+  repeat 0 fold 2: test C-index 0.630  (27s)
+  repeat 0 fold 3: train 400  test 100
+    epoch    0  train 1.4384  select 3.6589
+    epoch    5  train 1.1144  select 3.5402
+    epoch   10  train 1.0461  select 3.5353
+    epoch   15  train 0.9906  select 3.5064
+    epoch   20  train 0.9451  select 3.5153
+    epoch   24  train 0.9141  select 3.5139
+  repeat 0 fold 3: test C-index 0.697  (26s)
+  repeat 0 fold 4: train 400  test 100
+    epoch    0  train 0.8183  select 3.5156
+    epoch    5  train 0.7979  select 3.4356
+    epoch   10  train 0.7526  select 3.3796
+    epoch   15  train 0.7665  select 3.3678
+    epoch   20  train 0.7587  select 3.3613
+    epoch   24  train 0.7172  select 3.3465
+  repeat 0 fold 4: test C-index 0.662  (27s)
+cox_clinical  C-index 0.670
+rsf           C-index 0.699
+Terminated
