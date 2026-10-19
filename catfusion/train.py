@@ -17,7 +17,6 @@ import dataclasses
 import json
 import os
 import time as clock
-from functools import partial
 
 import jax
 import jax.numpy as jnp
@@ -51,14 +50,17 @@ class Trainer:
         self.optimizer = make_optimizer(tcfg, steps_per_epoch)
         self.rng = jax.random.PRNGKey(seed)
         self.params = None
+        # Compiled per instance (not jit on the method with a static `self`), so the
+        # compiled functions are freed together with the trainer instead of piling up.
+        self._train_step = jax.jit(self._train_step_impl)
+        self._predict = jax.jit(self._predict_impl)
 
     def init(self, batch):
         self.rng, key = jax.random.split(self.rng)
         self.params = self.model.init({"params": key}, batch.wsi, batch.omics, batch.genomics_present)["params"]
         self.opt_state = self.optimizer.init(self.params)
 
-    @partial(jax.jit, static_argnums=0)
-    def _train_step(self, params, opt_state, rng, wsi, omics, present, time, event, valid, teacher):
+    def _train_step_impl(self, params, opt_state, rng, wsi, omics, present, time, event, valid, teacher):
         def loss_fn(p):
             risk = self.model.apply({"params": p}, wsi, omics, present, deterministic=False, rngs={"dropout": rng})
             loss = self.cox(risk, time, event, valid)
@@ -70,8 +72,7 @@ class Trainer:
         updates, opt_state = self.optimizer.update(grads, opt_state, params)
         return optax.apply_updates(params, updates), opt_state, loss
 
-    @partial(jax.jit, static_argnums=0)
-    def _predict(self, params, wsi, omics, present):
+    def _predict_impl(self, params, wsi, omics, present):
         return self.model.apply({"params": params}, wsi, omics, present, deterministic=True)
 
     def train_epoch(self, cohort, idx, np_rng, teacher_risk=None):
@@ -198,6 +199,8 @@ def run_cv(cohort_dir, out_dir, model_name, mcfg: CATfusionConfig, tcfg: TrainCo
             last = rows[-len(test_missingness)]
             log(f"  repeat {rep} fold {k}: test C-index {cindex(last.time, last.event, last.risk):.3f}"
                 f"  ({clock.time() - t0:.0f}s)")
+            del trainer
+            jax.clear_caches()  # keep memory flat across many folds and runs
 
     preds = pd.concat(rows, ignore_index=True)
     preds.to_csv(os.path.join(out_dir, "predictions.csv"), index=False)
