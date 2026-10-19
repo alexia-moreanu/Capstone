@@ -47,12 +47,34 @@ def pooled_features(cohort):
     return np.concatenate([slide] + [v.mean(1) for v in cohort.omics.values()], axis=1)
 
 
+def lasso_cox(x_train, y_train, x_test, seed, n_inner=3):
+    """L1-penalised Cox. Each inner fold fits the whole penalty path once; the penalty with
+    the best mean inner C-index is refitted on all training patients."""
+    from sklearn.model_selection import StratifiedKFold
+    from sklearn.preprocessing import StandardScaler
+    from sksurv.linear_model import CoxnetSurvivalAnalysis
+
+    def path_model(alphas=None):
+        return CoxnetSurvivalAnalysis(l1_ratio=1.0, alpha_min_ratio=0.01, n_alphas=30, alphas=alphas, max_iter=20000)
+
+    scaler = StandardScaler().fit(x_train)
+    xs = scaler.transform(x_train)
+    alphas = path_model().fit(xs, y_train).alphas_
+    scores = np.zeros(len(alphas))
+    for tr, va in StratifiedKFold(n_inner, shuffle=True, random_state=seed).split(xs, y_train["event"]):
+        fold = path_model(alphas).fit(xs[tr], y_train[tr])
+        for i, a in enumerate(fold.alphas_):
+            scores[i] += cindex(y_train["time"][va], y_train["event"][va], fold.predict(xs[va], alpha=a))
+    best = alphas[int(np.argmax(scores))]
+    final = path_model(alphas).fit(xs, y_train)
+    return final.predict(scaler.transform(x_test), alpha=best)
+
+
 def fit_predict(name, x_train, y_train, x_test, seed):
-    from sklearn.model_selection import GridSearchCV, StratifiedKFold
     from sklearn.pipeline import make_pipeline
     from sklearn.preprocessing import StandardScaler
     from sksurv.ensemble import RandomSurvivalForest
-    from sksurv.linear_model import CoxnetSurvivalAnalysis, CoxPHSurvivalAnalysis
+    from sksurv.linear_model import CoxPHSurvivalAnalysis
 
     if name == "cox_clinical":
         model = make_pipeline(StandardScaler(), CoxPHSurvivalAnalysis(alpha=1e-4))
@@ -60,12 +82,7 @@ def fit_predict(name, x_train, y_train, x_test, seed):
         model = RandomSurvivalForest(n_estimators=300, min_samples_leaf=15, max_features="sqrt",
                                      n_jobs=-1, random_state=seed)
     elif name == "lasso_cox":
-        path = CoxnetSurvivalAnalysis(l1_ratio=1.0, alpha_min_ratio=0.01, n_alphas=30).fit(
-            StandardScaler().fit_transform(x_train), y_train).alphas_
-        model = GridSearchCV(make_pipeline(StandardScaler(), CoxnetSurvivalAnalysis(l1_ratio=1.0, max_iter=10000)),
-                             {"coxnetsurvivalanalysis__alphas": [[a] for a in path]},
-                             cv=StratifiedKFold(3, shuffle=True, random_state=seed).split(x_train, y_train["event"]),
-                             error_score=0.5)
+        return lasso_cox(x_train, y_train, x_test, seed)
     model.fit(x_train, y_train)
     return model.predict(x_test)
 
@@ -80,14 +97,17 @@ def main():
     ap.add_argument("--repeats", type=int, default=5)
     ap.add_argument("--folds", type=int, default=5)
     ap.add_argument("--split-seed", type=int, default=24)
+    ap.add_argument("--only", nargs="*", help="run only these baselines")
     args = ap.parse_args()
     warnings.filterwarnings("ignore")
     from sksurv.util import Surv
 
     cohort = Cohort(args.cohort, args.omics, args.projects)
     y = Surv.from_arrays(cohort.event.astype(bool), cohort.time)
+    ap_only = set(args.only or ["cox_clinical", "rsf", "lasso_cox"])
     inputs = {"cox_clinical": clinical_matrix(cohort.table), "rsf": pooled_features(cohort),
               "lasso_cox": pooled_features(cohort)}
+    inputs = {k: v for k, v in inputs.items() if k in ap_only}
 
     for name, x in inputs.items():
         rows = []
