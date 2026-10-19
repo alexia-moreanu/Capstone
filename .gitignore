@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+data/
+checkpoints/
+*.svs
+*.tiff
+*.pth
+*.msgpack
+.DS_Store

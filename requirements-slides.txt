@@ -1,0 +1,9 @@
+# Slide feature extraction only (step 3, PyTorch because CTransPath weights are PyTorch)
+torch>=2.1
+timm>=0.9
+openslide-python
+openslide-bin
+scikit-image
+scikit-learn
+h5py
+requests
