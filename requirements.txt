@@ -1,0 +1,14 @@
+# Model training and evaluation (JAX)
+jax>=0.4.30
+flax>=0.8
+optax>=0.2
+numpy
+pandas
+scipy
+scikit-learn
+scikit-survival>=0.23
+h5py
+matplotlib
+openpyxl          # reads the TCGA-CDR .xlsx
+requests
+pytest

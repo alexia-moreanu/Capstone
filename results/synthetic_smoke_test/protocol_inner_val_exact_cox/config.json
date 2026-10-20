@@ -1,0 +1,48 @@
+{
+  "model": "catfusion",
+  "model_cfg": {
+    "wsi_dim": 768,
+    "wsi_tokens": 100,
+    "omics_dim": 1024,
+    "omics_tokens": {
+      "rna_seq": 10,
+      "mirna_seq": 2,
+      "copynumbervariation": 4,
+      "dnamethylationvariation": 8,
+      "snp": 7
+    },
+    "hidden": 64,
+    "mlp_dim": 128,
+    "heads": 4,
+    "num_layers": 3,
+    "num_cross_layers": 2,
+    "attention_dropout": 0.2,
+    "dropout": 0.3,
+    "head_dims": [
+      64,
+      16
+    ],
+    "head_dropout": 0.5,
+    "output_range": 8.0,
+    "output_shift": -4.0
+  },
+  "train_cfg": {
+    "model": "catfusion",
+    "epochs": 25,
+    "batch_size": 64,
+    "lr": 0.0003,
+    "weight_decay": 0.0001,
+    "lr_step_epochs": 50,
+    "lr_gamma": 1.2,
+    "folds": 5,
+    "repeats": 1,
+    "split_seed": 24,
+    "seed": 1,
+    "selection": "inner_val",
+    "inner_val_fraction": 0.15,
+    "cox_loss": "exact",
+    "genomics_dropout": 0.0,
+    "distill_weight": 0.0
+  },
+  "teacher_cfg": null
+}
