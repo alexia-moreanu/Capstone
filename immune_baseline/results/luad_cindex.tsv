@@ -1,0 +1,10 @@
+	C-index	SD
+Clinical (age + stage)	0.6723	0.047
+cDC1 only	0.5715	0.043
+Cytolytic only	0.5047	0.0511
+TLS only	0.562	0.0481
+MHC-I only	0.5003	0.0396
+Treg only	0.5377	0.0499
+All immune	0.5622	0.043
+Clinical + cDC1	0.6773	0.0474
+Clinical + all immune	0.6648	0.0485
